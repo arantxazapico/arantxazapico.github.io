@@ -95,7 +95,7 @@ a:hover { color: var(--accent-soft); text-decoration-color: currentColor; }
   text-decoration: none; white-space: nowrap; flex: 0 0 auto;
 }
 .tabs {
-  display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none;
+  display: flex; gap: 6px;
   margin-left: auto; padding: 4px 0;
 }
 .tabs::-webkit-scrollbar { display: none; }
@@ -106,6 +106,16 @@ a:hover { color: var(--accent-soft); text-decoration-color: currentColor; }
 }
 .tabs a:hover { color: var(--ink); background: var(--surface); }
 .tabs a.active { color: var(--ink); border-color: var(--line); background: var(--surface); }
+.tab-group { position: relative; display: flex; }
+.submenu {
+  display: none; position: absolute; top: 100%; left: 0; padding-top: 6px; z-index: 11;
+}
+.submenu-inner {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 4px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.10);
+}
+.tab-group:hover .submenu, .tab-group:focus-within .submenu { display: block; }
+.submenu a { display: block; border-radius: 7px; }
 
 main { max-width: var(--max); margin: 0 auto; padding: calc(var(--nav-h) + 40px) 16px 80px; }
 section { padding: 44px 0 8px; }
@@ -188,7 +198,10 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
 @media (max-width: 700px) {
   :root { --nav-h: 96px; }
   .topnav-inner { flex-direction: column; align-items: stretch; justify-content: center; gap: 4px; }
-  .tabs { margin-left: -4px; }
+  .tabs { margin-left: -4px; overflow-x: auto; scrollbar-width: none; }
+  .tab-group, .submenu, .submenu-inner { display: contents; }
+  .tab-group:hover .submenu, .tab-group:focus-within .submenu { display: contents; }
+  .submenu a { display: inline-block; font-size: 0.8rem; }
   .hero { grid-template-columns: 1fr 112px; column-gap: 16px; row-gap: 16px; grid-template-areas: "head photo" "news news"; }
   h1 { font-size: 2rem; }
   .rows li { grid-template-columns: 1fr; row-gap: 2px; }
@@ -202,7 +215,10 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
     <a class="brand" href="#home">Arantxa Zapico</a>
     <div class="tabs" id="tabs">
       <a href="#home">Home</a>
-      <a href="#research">Research</a>
+      <div class="tab-group">
+        <a href="#research">Research</a>
+        <div class="submenu"><div class="submenu-inner"><a class="sub" href="#ethereum-research">Ethereum Research</a></div></div>
+      </div>
       <a href="#talks">Selected talks</a>
       <a href="#teaching">Teaching</a>
       <a href="#service">Service</a>
@@ -263,7 +279,7 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
       <li><span class="when">Jan 2023</span><span class="what">IMDEA Software Institute<span class="sep">·</span><span class="sub" style="display:inline">hosted by Dario Fiore</span></span></li>
     </ul>
 
-    <h3>Ethereum Research</h3>
+    <h3 id="ethereum-research">Ethereum Research</h3>
     <ul class="rows plain">
       <li><span class="what">Data availability sampling<span class="sub"><a href="https://eprint.iacr.org/2024/1362.pdf" target="_blank" rel="noreferrer">PeerDAS Documentation and Security Analysis</a> (paper)<span class="sep">·</span><a href="https://eprint.iacr.org/2025/1683.pdf" target="_blank" rel="noreferrer">Improved PeerDAS Security Analysis</a> (paper)</span></span></li>
       <li><span class="what">zkEVM soundness and security<span class="sub"><a href="https://www.youtube.com/watch?v=sKXGt5X6Vm8" target="_blank" rel="noreferrer">zkEVM Soundness</a> (talk)<span class="sep">·</span><a href="https://zkevm.ethereum.foundation/blog/cryptography-research-update" target="_blank" rel="noreferrer">zkEVM Security Sprint: February Update</a> (blog post)<span class="sep">·</span><a href="https://notes.ethereum.org/@5OzPHg-eTIGneNi3i6jvbw/HyMeKbnt-e" target="_blank" rel="noreferrer">Lookups on zkVMs</a> (blog post)<span class="sep">·</span><a href="https://github.com/ethereum/soundcalc" target="_blank" rel="noreferrer">Lookup soundness integration in Soundcalc</a></span></span></li>
@@ -365,7 +381,7 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
 
 <script>
 (function () {
-  var links = Array.prototype.slice.call(document.querySelectorAll('#tabs a'));
+  var links = Array.prototype.slice.call(document.querySelectorAll('#tabs a:not(.sub)'));
   var sections = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
   function update() {
     var y = window.scrollY + window.innerHeight * 0.3;
